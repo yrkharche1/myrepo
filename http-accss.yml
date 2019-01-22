@@ -1,0 +1,35 @@
+---
+ - name: http.auth.yml 
+   hosts: all
+   remote_user: devops
+   become: true
+   tasks:
+    - name: crate folder
+	  file:
+	   path: /var/www/html/private
+	   state: directory
+	   owner: root
+	   group: root
+	   mode: 0755
+	- name: download .htaccess.
+       get_url:
+       url: /http:content.exmaple.com/htccess
+       dest: /var/www/html/private/htaccess
+	   mode: 0644
+	- name: download htpasswd
+      get_url:
+       url: http://content.example.com/htpasswd
+       dest: /var/www/html/private/htpasswd
+       mode: 0644
+    - name: replace httpd content using replace
+      replace:
+       dest: /etc/httpd/conf/httpd.conf
+       regexp: 'allowoverite none'
+       replace: 'allowoverite authconfig'
+    - name: create index.html
+      copy:
+       content: "this node {{ ansible_hostname }} is protected
+       dest: /var/www/html/private/index.html
+    - name: httpd start and enable
+       service: name=httpd state=started enabled=yes	
+...

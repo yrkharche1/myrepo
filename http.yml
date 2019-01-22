@@ -1,0 +1,25 @@
+--- 
+ - name: httpd yml
+   hosts: all
+   remote_user: devops
+   tasks:
+     - name: httpd install
+	   yum: 
+	    name: httpd 
+		state: latest
+	 - name: download httpd file
+       get_url:
+        url:http://content.example.com/ds.tasks/httpd.conf/tempate 
+        dest: /etc/httpd/conf/httpd.conf/httpd
+        force: yes
+ 	 - name: change content in index.hmtl file  
+       lineinfile:
+        dest: /var/www/html/index.html/index   
+        line: :hello from "{{ ansible_hostname }}"		
+        create: yes 
+     - name: start httpd  
+       service: 
+        name: httpd  
+        state: started
+        enabled: yes		
+...
